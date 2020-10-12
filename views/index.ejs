@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Language" content="vi" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Search Trademark</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This is an example dashboard created using build-in elements and components."
+    />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!--
+    =========================================================
+    * ArchitectUI HTML Theme Dashboard - v1.0.0
+    =========================================================
+    * Product Page: https://dashboardpack.com
+    * Copyright 2019 DashboardPack (https://dashboardpack.com)
+    * Licensed under MIT (https://github.com/DashboardPack/architectui-html-theme-free/blob/master/LICENSE)
+    =========================================================
+    * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    -->
+    <link href="/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <script
+      src="https://kit.fontawesome.com/eb123fc88b.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div
+      id="splash"
+      style="
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        display: block;
+        justify-content: center;
+        align-items: center;
+        background-color: #ebebeb;
+      "
+      ;
+    ></div>
+
+    <div
+      id="loading"
+      style="
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 8888;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(170, 180, 204, 0.2);
+      "
+      ;
+    >
+      <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
+    <div
+      id="login-modal"
+      style="
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 8888;
+        display: block;
+        justify-content: center;
+        align-items: center;
+      "
+      ;
+    >
+      <div class="limiter">
+        <div class="container-login100">
+          <div class="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
+            <div class="login100-form validate-form flex-sb flex-w">
+              <span class="login100-form-title p-b-32"> Account Login </span>
+              <span
+                id="error-login"
+                style="display: none"
+                class="login100-form p-b-16 font-weight-lighter text-danger"
+              >
+                Tài khoản hoặc mật khẩu không đúng</span
+              >
+
+              <span class="txt1 p-b-11"> Username </span>
+              <div
+                class="wrap-input100 validate-input m-b-36"
+                data-validate="Username is required"
+              >
+                <input
+                  id="username"
+                  class="input100"
+                  type="text"
+                  name="username"
+                />
+                <span class="focus-input100"></span>
+              </div>
+
+              <span class="txt1 p-b-11"> Password </span>
+              <div
+                class="wrap-input100 validate-input m-b-12"
+                data-validate="Password is required"
+              >
+                <span class="btn-show-pass">
+                  <i class="fa fa-eye"></i>
+                </span>
+                <input
+                  id="password"
+                  class="input100"
+                  type="password"
+                  name="pass"
+                />
+                <span class="focus-input100"></span>
+              </div>
+
+              <div class="flex-sb-m w-full p-b-48">
+                <div class="contact100-form-checkbox">
+                  <input
+                    class="input-checkbox100"
+                    id="ckb1"
+                    type="checkbox"
+                    name="remember-me"
+                  />
+                  <label class="label-checkbox100" for="ckb1">
+                    Remember me
+                  </label>
+                </div>
+
+                <div>
+                  <a href="#" class="txt3"> Forgot Password? </a>
+                </div>
+              </div>
+
+              <div class="container-login100-form-btn">
+                <button id="btn-login" class="login100-form-btn">Login</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header"
+    >
+      <div class="app-header header-shadow">
+        <div class="app-header__logo">
+          <div class="logo-src"></div>
+          <div class="header__pane ml-auto">
+            <div>
+              <button
+                type="button"
+                class="hamburger close-sidebar-btn hamburger--elastic"
+                data-class="closed-sidebar"
+              >
+                <span class="hamburger-box">
+                  <span class="hamburger-inner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="app-header__mobile-menu">
+          <div>
+            <button
+              type="button"
+              class="hamburger hamburger--elastic mobile-toggle-nav"
+            >
+              <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="app-header__menu">
+          <span>
+            <button
+              type="button"
+              class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav"
+            >
+              <span class="btn-icon-wrapper">
+                <i class="fa fa-ellipsis-v fa-w-6"></i>
+              </span>
+            </button>
+          </span>
+        </div>
+
+        <div class="app-header__content">
+          <div class="app-header-left">
+            <div class="search-wrapper">
+              <div class="input-holder">
+                <input
+                  type="text"
+                  class="search-input"
+                  placeholder="Type to search"
+                />
+                <button class="search-icon"><span></span></button>
+              </div>
+              <button class="close"></button>
+            </div>
+            <ul class="header-menu nav"></ul>
+          </div>
+          <div class="app-header-right">
+            <div class="header-btn-lg pr-0">
+              <div class="widget-content p-0">
+                <div class="widget-content-wrapper">
+                  <!-- <div class="widget-content-left">
+                    <div class="btn-group">
+                      <a
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        class="p-0 btn"
+                      >
+                        <img
+                          width="42"
+                          class="rounded-circle"
+                          src="/images/avatars/1.jpg"
+                          alt=""
+                        />
+                        <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                      </a>
+                      <div
+                        tabindex="-1"
+                        role="menu"
+                        aria-hidden="true"
+                        class="dropdown-menu dropdown-menu-right"
+                      >
+                        <button
+                          type="button"
+                          tabindex="0"
+                          class="dropdown-item"
+                        >
+                          User Account
+                        </button>
+                        <button
+                          type="button"
+                          tabindex="0"
+                          class="dropdown-item"
+                        >
+                          Settings
+                        </button>
+                        <h6 tabindex="-1" class="dropdown-header">Header</h6>
+                        <button
+                          type="button"
+                          tabindex="0"
+                          class="dropdown-item"
+                        >
+                          Actions
+                        </button>
+                        <div tabindex="-1" class="dropdown-divider"></div>
+                        <button
+                          type="button"
+                          tabindex="0"
+                          class="dropdown-item"
+                        >
+                          Dividers
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+                  <div class="widget-content-left ml-3">
+                    <div class="widget-heading">Key sẽ hết hạn</div>
+                    <div class="widget-subheading">Ngày: 21/03/2021</div>
+                  </div>
+                  <div class="widget-content-right ml-3">
+                    <button
+                      type="button"
+                      class="btn-shadow p-1 btn btn-primary btn-sm"
+                    >
+                      <i class="fa text-white fa-calendar pr-1 pl-1"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-main">
+        <div class="app-sidebar sidebar-shadow">
+          <div class="app-header__logo">
+            <div class="logo-src"></div>
+            <div class="header__pane ml-auto">
+              <div>
+                <button
+                  type="button"
+                  class="hamburger close-sidebar-btn hamburger--elastic"
+                  data-class="closed-sidebar"
+                >
+                  <span class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="app-header__mobile-menu">
+            <div>
+              <button
+                type="button"
+                class="hamburger hamburger--elastic mobile-toggle-nav"
+              >
+                <span class="hamburger-box">
+                  <span class="hamburger-inner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="app-header__menu">
+            <span>
+              <button
+                type="button"
+                class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav"
+              >
+                <span class="btn-icon-wrapper">
+                  <i class="fa fa-ellipsis-v fa-w-6"></i>
+                </span>
+              </button>
+            </span>
+          </div>
+          <div class="scrollbar-sidebar">
+            <div class="app-sidebar__inner">
+              <ul class="vertical-nav-menu">
+                <li class="app-sidebar__heading">Danh mục</li>
+                <li>
+                  <a href="#" class="mm-active">
+                    <i class="fa fa-trademark" aria-hidden="true"></i>
+                    TradeMark
+                  </a>
+                </li>
+                <!-- <li class="app-sidebar__heading">UI Components</li>
+                <li class="mm-active">
+                  <a href="#"> Elements </a>
+                  <ul class="mm-show">
+                    <li>
+                      <a href="elements-buttons-standard.html"> Buttons </a>
+                    </li>
+                    <li>
+                      <a href="elements-dropdowns.html"> Dropdowns </a>
+                    </li>
+                    <li>
+                      <a href="elements-icons.html" class="mm-active">
+                        Icons
+                      </a>
+                    </li>
+                    <li>
+                      <a href="elements-badges-labels.html"> Badges </a>
+                    </li>
+                    <li>
+                      <a href="elements-cards.html"> Cards </a>
+                    </li>
+                    <li>
+                      <a href="elements-list-group.html"> List Groups </a>
+                    </li>
+                    <li>
+                      <a href="elements-navigation.html"> Navigation Menus </a>
+                    </li>
+                    <li>
+                      <a href="elements-utilities.html"> Utilities </a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="#"> Components </a>
+                  <ul>
+                    <li>
+                      <a href="components-tabs.html"> Tabs </a>
+                    </li>
+                    <li>
+                      <a href="components-accordions.html">
+                        <i class="metismenu-icon"> </i>Accordions
+                      </a>
+                    </li>
+                    <li>
+                      <a href="components-notifications.html">
+                        Notifications
+                      </a>
+                    </li>
+                    <li>
+                      <a href="components-modals.html"> Modals </a>
+                    </li>
+                    <li>
+                      <a href="components-progress-bar.html"> Progress Bar </a>
+                    </li>
+                    <li>
+                      <a href="components-tooltips-popovers.html">
+                        <i class="metismenu-icon"> </i>Tooltips &amp; Popovers
+                      </a>
+                    </li>
+                    <li>
+                      <a href="components-carousel.html"> Carousel </a>
+                    </li>
+                    <li>
+                      <a href="components-calendar.html"> Calendar </a>
+                    </li>
+                    <li>
+                      <a href="components-pagination.html"> Pagination </a>
+                    </li>
+                    <li>
+                      <a href="components-scrollable-elements.html">
+                        Scrollable
+                      </a>
+                    </li>
+                    <li>
+                      <a href="components-maps.html"> Maps </a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="tables-regular.html"> Tables </a>
+                </li>
+                <li class="app-sidebar__heading">Widgets</li>
+                <li>
+                  <a href="dashboard-boxes.html"> Dashboard Boxes </a>
+                </li>
+                <li class="app-sidebar__heading">Forms</li>
+                <li>
+                  <a href="forms-controls.html"> Forms Controls </a>
+                </li>
+                <li>
+                  <a href="forms-layouts.html"> Forms Layouts </a>
+                </li>
+                <li>
+                  <a href="forms-validation.html"> Forms Validation </a>
+                </li>
+                <li class="app-sidebar__heading">Charts</li>
+                <li>
+                  <a href="charts-chartjs.html"> ChartJS </a>
+                </li>
+                <li class="app-sidebar__heading">PRO Version</li>
+                <li>
+                  <a
+                    href="https://dashboardpack.com/theme-details/architectui-dashboard-html-pro/"
+                    target="_blank"
+                  >
+                    Upgrade to PRO
+                  </a>
+                </li> -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-main__outer">
+          <div class="app-main__inner">
+            <div class="row"></div>
+
+            <ul
+              class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav"
+            >
+              <li class="nav-item">
+                <a
+                  role="tab"
+                  class="nav-link active"
+                  id="tab-0"
+                  data-toggle="tab"
+                  href="#tab-content-0"
+                >
+                  <span>Key Search</span>
+                </a>
+              </li>
+            </ul>
+
+            <div class="tab-content">
+              <div
+                class="tab-pane tabs-animation fade show active"
+                role="tabpanel"
+              >
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                      <div class="card-body">
+                        <div class="position-relative form-group">
+                          <span class="form-text text-muted">
+                            Nhập từ khóa
+                          </span>
+                          <textarea
+                            name="text"
+                            id="text-search"
+                            class="form-control"
+                            style="height: 70px"
+                          ></textarea>
+                        </div>
+
+                        <button id="btn-search" class="mt-1 btn btn-primary">
+                          Tìm kiếm
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content">
+              <div
+                class="tab-pane tabs-animation fade show active"
+                role="tabpanel"
+              >
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                      <div class="card-body">
+                        <div class="position-relative form-group">
+                          <span class="form-text text-muted">
+                            Danh sách từ khóa lọc
+                          </span>
+                          <div id="list-filter" style="margin-top: 12px"></div>
+                        </div>
+
+                        <hr />
+                        <div
+                          class="position-relative form-group d-flex justify-content-between align-items-baseline"
+                        >
+                          <div>
+                            <button
+                              class="btn btn-success btn-lg"
+                              style="position: relative; cursor: pointer"
+                            >
+                              <i
+                                class="fa fa-file-excel-o"
+                                aria-hidden="true"
+                              ></i>
+                              Chọn tệp
+                              <input
+                                name="file"
+                                id="file-exclude"
+                                type="file"
+                                class="form-control-file"
+                                accept=".xlsx,.xlsm"
+                                style="
+                                  position: absolute;
+                                  width: 100%;
+                                  height: 100%;
+                                  left: 0;
+                                  top: 0;
+                                  opacity: 0;
+                                  z-index: 9999;
+                                  cursor: pointer;
+                                "
+                              />
+                            </button>
+
+                            <small class="form-text text-muted"
+                              >Chọn tệp excel muốn loại bỏ từ khóa.</small
+                            >
+                          </div>
+                          <button
+                            class="btn btn-info btn-lg"
+                            style="position: relative; cursor: pointer"
+                            id="reset"
+                          >
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                            Reset
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="main-card mb-3 card">
+                  <div class="card-header">
+                    Kết quả tìm kiếm &nbsp;<span
+                      class="text-info"
+                      id="text-count"
+                      >0</span
+                    >
+                  </div>
+                  <div class="table-responsive">
+                    <table
+                      class="align-middle mb-0 table table-borderless table-striped table-hover"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="text-center">SERIAL</th>
+                          <th class="text-center">TRADEMARK</th>
+                          <th class="text-center">STATUS</th>
+                          <th class="text-center">TYPE</th>
+                          <th class="text-center">FILED ON</th>
+                          <th class="text-center">REGISTERS ON</th>
+                        </tr>
+                      </thead>
+                      <tbody id="table-body-trade-mark"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-center card-footer">
+                    <button
+                      id="load-more"
+                      style="display: none"
+                      class="mb-2 mr-2 btn btn-primary"
+                    >
+                      Tải thêm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+          integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+          crossorigin="anonymous"
+        ></script>
+      </div>
+    </div>
+    <script type="text/javascript" src="/scripts/main.js"></script>
+    <script type="text/javascript" src="/scripts/search.js"></script>
+  </body>
+</html>
