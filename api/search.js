@@ -141,14 +141,14 @@ const splitString = (str) => {
 
   if (arrText.length > 2) {
     for (let index = 0; index < arrText.length - 1; index++) {
-      childSearchList.push(`${arrText[index]} ${arrText[index + 1]}`);
+      childSearchList.push(`${arrText[index]} ${arrText[index + 1]}`.trim());
     }
   }
 
   if (arrText.length > 3) {
     for (let index = 0; index < arrText.length - 2; index++) {
       childSearchList.push(
-        `${arrText[index]} ${arrText[index + 1]} ${arrText[index + 2]} `
+        `${arrText[index]} ${arrText[index + 1]} ${arrText[index + 2]}`.trim()
       );
     }
   }
