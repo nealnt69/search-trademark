@@ -116,23 +116,46 @@ const getDetailSeri = async (ids) => {
 };
 
 const filterData = (dataJson, textSearch, filter, childSearchList) => {
-  return dataJson.filter((data) => {
-    if (
-      !filter.some(
-        (e) => e.trim().toLowerCase() === data.trademark.trim().toLowerCase()
-      )
-    ) {
-      return (
-        data.trademark &&
-        (data.trademark.toLowerCase() === textSearch ||
-          textSearch.split(" ").includes(data.trademark.toLowerCase()) ||
-          childSearchList.includes(data.trademark.toLowerCase())) &&
-        data.des.match(/shirts/gi)
-      );
-    } else {
-      return false;
+  let listResult = [];
+  for (const data of dataJson) {
+    if (data.trademark) {
+      if (
+        !filter.some(
+          (e) => e.trim().toLowerCase() === data.trademark.trim().toLowerCase()
+        )
+      ) {
+        console.log(data.trademark);
+        if (
+          data.trademark &&
+          (data.trademark.toLowerCase() === textSearch ||
+            textSearch.split(" ").includes(data.trademark.toLowerCase()) ||
+            childSearchList.includes(data.trademark.toLowerCase())) &&
+          data.des.match(/shirts/gi)
+        ) {
+          listResult.push(data);
+        }
+      }
     }
-  });
+  }
+  return listResult;
+
+  // return dataJson.filter((data) => {
+  //   if (
+  //     !filter.some(
+  //       (e) => e.trim().toLowerCase() === data.trademark.trim().toLowerCase()
+  //     )
+  //   ) {
+  //     return (
+  //       data.trademark &&
+  //       (data.trademark.toLowerCase() === textSearch ||
+  //         textSearch.split(" ").includes(data.trademark.toLowerCase()) ||
+  //         childSearchList.includes(data.trademark.toLowerCase())) &&
+  //       data.des.match(/shirts/gi)
+  //     );
+  //   } else {
+  //     return false;
+  //   }
+  // });
 };
 
 const splitString = (str) => {
@@ -158,6 +181,7 @@ const splitString = (str) => {
 
 router.post("/", async function (req, res, next) {
   const { text, page, filter } = req.body;
+  console.log(filter);
   let textSearch = text.trim().replace(/\s+/g, " ").toLowerCase();
   const arrSplit = textSearch.split(",");
   const childSearchList = arrSplit.map((item) => splitString(item)).flat();
