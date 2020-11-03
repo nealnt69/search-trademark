@@ -5,7 +5,13 @@ const cheerio = require("cheerio");
 const axios = require("axios");
 
 const globalSession = require("../global/session");
-const { text } = require("express");
+
+let keys = [
+  "XcGMu7hCC0226gQGw3yRWJQJksuYUhLX",
+  "8FxJB9oy4izoKfeyHSUSizO7b1eTHDaM",
+  "lr0BdqQWHlqAJ81yw6m9TbC8aYHSPhU2",
+  "fIePsCUpYnokEsQfl1vhlZsZER1E5Qnq",
+];
 
 const getDataLink1 = async (cookie, sesion, search) => {
   return axios({
@@ -108,9 +114,11 @@ const getDetailSeri = async (ids) => {
     url: `https://tsdrapi.uspto.gov/ts/cd/caseMultiStatus/sn?ids=${ids}`,
     method: "get",
     headers: {
-      "USPTO-API-KEY": "fIePsCUpYnokEsQfl1vhlZsZER1E5Qnq",
+      "USPTO-API-KEY": keys[0],
     },
   }).then((response) => {
+    let removeFirstKey = keys.shift();
+    keys.push(removeFirstKey);
     return response.data;
   });
 };
@@ -124,7 +132,6 @@ const filterData = (dataJson, textSearch, filter, childSearchList) => {
           (e) => e.trim().toLowerCase() === data.trademark.trim().toLowerCase()
         )
       ) {
-        console.log(data.trademark);
         if (
           data.trademark &&
           (data.trademark.toLowerCase() === textSearch ||
@@ -181,7 +188,6 @@ const splitString = (str) => {
 
 router.post("/", async function (req, res, next) {
   const { text, page, filter } = req.body;
-  console.log(filter);
   let textSearch = text.trim().replace(/\s+/g, " ").toLowerCase();
   const arrSplit = textSearch.split(",");
   const childSearchList = arrSplit.map((item) => splitString(item)).flat();
