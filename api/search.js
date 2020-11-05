@@ -137,7 +137,7 @@ const filterData = (dataJson, textSearch, filter, childSearchList) => {
           (data.trademark.toLowerCase() === textSearch ||
             textSearch.split(" ").includes(data.trademark.toLowerCase()) ||
             childSearchList.includes(data.trademark.toLowerCase())) &&
-          data.des.match(/shirts/gi)
+          data.des.match(/shirts|shirt/gi)
         ) {
           listResult.push(data);
         }
