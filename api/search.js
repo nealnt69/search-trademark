@@ -243,22 +243,26 @@ router.post("/", async function (req, res, next) {
           const mergeDetail = detailListSeri
             .map((item) => item.transactionList)
             .flat();
-
-          const dataJson = mergeDetail.map((item) => ({
-            serial: item.trademarks[0].status.serialNumber,
-            trademark: item.trademarks[0].status.markElement,
-            status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
-            type:
-              item.trademarks[0].status.markDrawingCd == "4" ||
-              item.trademarks[0].status.markDrawingCd == "1"
-                ? "Text"
-                : "Design",
-            fieldOn: item.trademarks[0].status.filingDate,
-            registerDate: item.trademarks[0].publication.datePublished,
-            des: item.trademarks[0].gsList
-              .map((item) => item.description)
-              .join(" "),
-          }));
+          const dataJson = mergeDetail.map((item) => {
+            return {
+              serial: item.trademarks[0].status.serialNumber,
+              trademark: item.trademarks[0].status.markElement,
+              status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
+              type:
+                item.trademarks[0].status.markDrawingCd == "4" ||
+                item.trademarks[0].status.markDrawingCd == "1"
+                  ? "Text"
+                  : "Design",
+              fieldOn: item.trademarks[0].status.filingDate,
+              registerDate:
+                item.trademarks[0].status.usRegistrationNumber != ""
+                  ? item.trademarks[0].status.usRegistrationDate
+                  : "Chưa đăng ký",
+              des: item.trademarks[0].gsList
+                .map((item) => item.description)
+                .join(" "),
+            };
+          });
 
           const filterDataJson = filterData(
             dataJson,
@@ -308,7 +312,10 @@ router.post("/", async function (req, res, next) {
                 ? "Text"
                 : "Design",
             fieldOn: item.trademarks[0].status.filingDate,
-            registerDate: item.trademarks[0].publication.datePublished,
+            registerDate:
+              item.trademarks[0].status.usRegistrationNumber != ""
+                ? item.trademarks[0].status.usRegistrationDate
+                : "Chưa đăng ký",
             des: item.trademarks[0].gsList
               .map((item) => item.description)
               .join(" "),
