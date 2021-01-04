@@ -123,9 +123,11 @@ btnLoadMore.on("click", () => {
 });
 
 const getData = async (page, type = "search") => {
+
   try {
     const filterLocalStorage = localStorage.getItem("filter-search");
-
+    const key = JSON.parse(window.localStorage.getItem("key"))
+    const keyDate = JSON.parse(window.localStorage.getItem("date"))
     $("#loading").css("display", "flex");
     const res = await axios({
       method: "post",
@@ -137,6 +139,8 @@ const getData = async (page, type = "search") => {
         text: textSearching,
         page,
         filter: filterLocalStorage ? JSON.parse(filterLocalStorage) : [],
+        key,
+        keyDate
       },
       timeout: 60000,
     });
@@ -164,25 +168,20 @@ const getData = async (page, type = "search") => {
             (item) =>
               ` <tr>
         <td class="text-center text-muted">
-        <a href='https://tsdr.uspto.gov/#caseNumber=${
-          item.serial
-        }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${
-                item.serial
+        <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+              }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
               }</a></td>
         <td class="text-center">
            ${item.trademark}
         </td>
         <td class="text-center">
-          <div class="btn btn-sm  ${
-            item.status === "LIVE" ? "btn-success" : "btn-danger"
-          }">${item.status}</div>
+          <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+              }">${item.status}</div>
         </td>
-        <td class="text-center ${
-          item.type === "Design" ? "text-info" : "text-secondary"
-        } trademark-type" style="position:relative;cursor:pointer" >${item.type}
-        <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${
-          item.trademark
-        }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+        <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+              } trademark-type" style="position:relative;cursor:pointer" >${item.type}
+        <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+              }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
         </td>
         <td class="text-center">
            ${item.fieldOn}
@@ -201,27 +200,21 @@ const getData = async (page, type = "search") => {
             (item) =>
               ` <tr>
           <td class="text-center text-muted">
-          <a href='https://tsdr.uspto.gov/#caseNumber=${
-            item.serial
-          }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${
-                item.serial
+          <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+              }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
               }</a></td>
           <td class="text-center">
              ${item.trademark}
           </td>
           <td class="text-center">
-            <div class="btn btn-sm  ${
-              item.status === "LIVE" ? "btn-success" : "btn-danger"
-            }">${item.status}</div>
+            <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+              }">${item.status}</div>
           </td>
-          <td class="text-center ${
-            item.type === "Design" ? "text-info" : "text-secondary"
-          } trademark-type" style="position:relative;cursor:pointer" >${
-                item.type
+          <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+              } trademark-type" style="position:relative;cursor:pointer" >${item.type
               }
-          <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${
-            item.trademark
-          }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+          <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+              }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
           </td>
           <td class="text-center">
              ${item.fieldOn}

@@ -13,6 +13,7 @@ let keys = [
   "fIePsCUpYnokEsQfl1vhlZsZER1E5Qnq",
 ];
 
+
 const getDataLink1 = async (cookie, sesion, search) => {
   return axios({
     url: `http://tmsearch.uspto.gov/bin/showfield?f=toc&state=${sesion}&p_search=searchss&p_L=50&BackReference=&p_plural=yes&p_s_PARA1=&p_tagrepl%7E%3A=PARA1%24LD&expr=PARA1+AND+PARA2&p_s_PARA2=${search}&p_tagrepl%7E%3A=PARA2%24COMB&p_op_ALL=ADJ&a_default=search&a_search=Submit+Query&a_search=Submit+Query`,
@@ -27,7 +28,7 @@ const getDataLink1 = async (cookie, sesion, search) => {
 
 const getDataLink2 = async (cookie, sesion, search) => {
   return axios({
-    url: `http://tmsearch.uspto.gov/bin/showfield?f=toc&state=${sesion}&p_search=searchstr&BackReference=&p_L=500&p_plural=yes&p_s_PARA1=${search}&p_tagrepl%7E%3A=PARA1%24FM&expr=PARA1+and+PARA2&p_s_PARA2=shirts&p_tagrepl%7E%3A=PARA1%24GS&a_default=search&f=toc&state=${sesion}&a_search=Submit+Query`,
+    url: `http://tmsearch.uspto.gov/bin/showfield?f=toc&state=${sesion}&p_search=searchstr&BackReference=&p_L=500&p_plural=yes&p_s_PARA1=${search}&p_tagrepl%7E%3A=PARA1%24FM&expr=PARA1+and+PARA2&p_s_PARA2=clothing%2C+dress%2C+shirt&p_tagrepl%7E%3A=PARA1%24GS&a_default=search&f=toc&state=${sesion}&a_search=Submit+Query`,
     method: "get",
     headers: {
       Cookie: `${cookie};`,
@@ -187,10 +188,14 @@ const splitString = (str) => {
 };
 
 router.post("/", async function (req, res, next) {
-  const { text, page, filter } = req.body;
+  const { text, page, filter, key, keyDate } = req.body;
   let textSearch = text.trim().replace(/\s+/g, " ").toLowerCase();
   const arrSplit = textSearch.split(",");
   const childSearchList = arrSplit.map((item) => splitString(item)).flat();
+  const listKeyValid = key.filter((item, index) => { return new Date(keyDate[index]) > new Date() });
+  if (listKeyValid && listKeyValid.length > 0) {
+    keys = listKeyValid
+  }
 
   if (!textSearch) {
     res.status(200).json({ status: "error" });
@@ -250,7 +255,7 @@ router.post("/", async function (req, res, next) {
               status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
               type:
                 item.trademarks[0].status.markDrawingCd == "4" ||
-                item.trademarks[0].status.markDrawingCd == "1"
+                  item.trademarks[0].status.markDrawingCd == "1"
                   ? "Text"
                   : "Design",
               fieldOn: item.trademarks[0].status.filingDate,
@@ -308,7 +313,7 @@ router.post("/", async function (req, res, next) {
             status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
             type:
               item.trademarks[0].status.markDrawingCd == "4" ||
-              item.trademarks[0].status.markDrawingCd == "1"
+                item.trademarks[0].status.markDrawingCd == "1"
                 ? "Text"
                 : "Design",
             fieldOn: item.trademarks[0].status.filingDate,
@@ -337,7 +342,7 @@ router.post("/", async function (req, res, next) {
         }
         res.json({ status: "error" });
       }
-    } catch (error) {}
+    } catch (error) { }
 
     res.end();
   }
