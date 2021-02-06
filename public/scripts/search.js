@@ -24,6 +24,8 @@ let textSearching = "";
 let pageSearching = 1;
 let count = 0;
 
+let listTradeMark = [];
+
 $(document).ready(function () {
   if (filterLocalStorage) {
     listFilter.html(
@@ -76,6 +78,24 @@ $(document).ready(function () {
       $("#error-login").css("display", "block");
     }
   });
+
+
+  $("#filter-status").on("change", function (e) {
+    switch ($(this).val()) {
+      case "all":
+        render(listTradeMark)
+        break;
+      case "live":
+        render(listTradeMark.filter(item => item.status === "LIVE"));
+        break;
+      case "dead":
+        render(listTradeMark.filter(item => item.status === "DEAD"));
+        break;
+      default:
+        break;
+    }
+  })
+
 });
 
 const handleFile = (e) => {
@@ -122,8 +142,70 @@ btnLoadMore.on("click", () => {
   getData(pageSearching, "loadMore");
 });
 
-const getData = async (page, type = "search") => {
+const render = tradeMarks => {
 
+  let keyword = JSON.parse(window.localStorage.getItem("list-trademark"));
+
+
+  let contentTable = `${keyword
+    .map(
+      (item) =>
+        ` <tr>
+<td class="text-center text-muted">
+</td>
+<td class="text-center">
+   ${item}
+</td>
+<td class="text-center">
+  <div class="btn btn-sm btn-success"
+        ">LIVE</div>
+</td>
+<td class="text-center">
+  <div class="btn btn-sm"
+        ">Text</div>
+</td>
+<td class="text-center">
+</td>
+<td class="text-center">
+
+</td>
+</tr>`
+    )
+    .join("")} ${tradeMarks
+      .map(
+        (item) =>
+          ` <tr>
+<td class="text-center text-muted">
+<a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+          }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
+          }</a></td>
+<td class="text-center">
+   ${item.trademark}
+</td>
+<td class="text-center">
+  <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+          }">${item.status}</div>
+</td>
+<td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+          } trademark-type" style="position:relative;cursor:pointer" >${item.type}
+<div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+          }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+</td>
+<td class="text-center">
+   ${item.fieldOn}
+</td>
+<td class="text-center">
+${item.registerDate || "Chưa đăng ký"}
+</td>
+</tr>`
+      )
+      .join("")}`;
+
+  tableBodyTradeMark.innerHTML = contentTable;
+}
+
+const getData = async (page, type = "search") => {
+  $("#filter-status").val("all")
   try {
     const filterLocalStorage = localStorage.getItem("filter-search");
     const key = JSON.parse(window.localStorage.getItem("key"))
@@ -152,46 +234,49 @@ const getData = async (page, type = "search") => {
     if (res && res.data.status === "ok") {
       const tradeMarks = res.data.tradeMarks;
 
-      if (tradeMarks.length === 25) {
-        btnLoadMore.css("display", "block");
-      } else {
-        btnLoadMore.css("display", "none");
-      }
+      // if (tradeMarks.length === 25) {
+      //   btnLoadMore.css("display", "block");
+      // } else {
+      //   btnLoadMore.css("display", "none");
+      // }
 
       let contentTable = "";
 
       if (type === "search") {
         count = tradeMarks.length;
+        listTradeMark = tradeMarks;
 
-        contentTable = tradeMarks
-          .map(
-            (item) =>
-              ` <tr>
-        <td class="text-center text-muted">
-        <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
-              }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
-              }</a></td>
-        <td class="text-center">
-           ${item.trademark}
-        </td>
-        <td class="text-center">
-          <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
-              }">${item.status}</div>
-        </td>
-        <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
-              } trademark-type" style="position:relative;cursor:pointer" >${item.type}
-        <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
-              }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
-        </td>
-        <td class="text-center">
-           ${item.fieldOn}
-        </td>
-        <td class="text-center">
-        ${item.registerDate || "Chưa đăng ký"}
-     </td>
-      </tr>`
-          )
-          .join("");
+        render(tradeMarks)
+
+    //     contentTable = tradeMarks
+    //       .map(
+    //         (item) =>
+    //           ` <tr>
+    //     <td class="text-center text-muted">
+    //     <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+    //           }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
+    //           }</a></td>
+    //     <td class="text-center">
+    //        ${item.trademark}
+    //     </td>
+    //     <td class="text-center">
+    //       <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+    //           }">${item.status}</div>
+    //     </td>
+    //     <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+    //           } trademark-type" style="position:relative;cursor:pointer" >${item.type}
+    //     <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+    //           }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+    //     </td>
+    //     <td class="text-center">
+    //        ${item.fieldOn}
+    //     </td>
+    //     <td class="text-center">
+    //     ${item.registerDate || "Chưa đăng ký"}
+    //  </td>
+    //   </tr>`
+    //       )
+    //       .join("");
         textCount.html(count);
       } else {
         count += tradeMarks.length;
@@ -228,9 +313,9 @@ const getData = async (page, type = "search") => {
         textCount.html(count);
       }
 
-      tableBodyTradeMark.innerHTML = contentTable;
+      // tableBodyTradeMark.innerHTML = contentTable;
     } else {
-      tableBodyTradeMark.innerHTML = "";
+      // tableBodyTradeMark.innerHTML = "";
     }
   } catch (error) {
     tableBodyTradeMark.innerHTML = "";

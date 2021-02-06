@@ -36,6 +36,17 @@ const getDataLink2 = async (cookie, sesion, search) => {
   }).then((response) => response.data);
 };
 
+const getPage = async (cookie, session, jump) => {
+  return axios({
+    url: `http://tmsearch.uspto.gov/bin/jumpto?f=toc&state=${session}&jumpto=${jump}`,
+    method: "get",
+    headers: {
+      Cookie: `${cookie};`,
+    },
+  }).then((response) => response.data);
+
+}
+
 const getCookie = async () => {
   return axios({
     url: "http://tmsearch.uspto.gov",
@@ -84,17 +95,24 @@ const getHtmlCrawl2 = async (textSearch) => {
 
 const getCount = (html) => {
   const countString = html
-    .match(/(.*?This page: 1 ~ 50.*?)<\s*\/\s*font>/gi)[0]
-    .split(" ")[0];
-  return +countString;
+    .match(/(.*?This page: 1 ~.*?)<\s*\/\s*Font>/g)
+  if (countString) {
+    return countString[0]
+      .split(" ")[0] * 1;
+  }
+  else {
+    return 0
+  }
 };
+
+
 
 const getDataCrawl = (html) => {
   if (html.includes("FOOTER END")) {
-    const listSeri = html.match(/<\s*a[^>]*>([0-9]{8})<\s*\/\s*a>/gi);
+    const listSeri = html.match(/<\s*TD[^>]*><\s*a[^>]*>([0-9]{8})<\s*\/\s*a><\s*\/\s*TD>/gi);
     if (listSeri) {
       return listSeri.map(function (val) {
-        return val.replace(/<\s*a[^>]*>|<\/?a>/gi, "");
+        return val.replace(/(<\s*a[^>]*>|<\/?a>)|(<\s*td[^>]*>|<\/?td>)/gi, "");
       });
     } else {
       const $ = cheerio.load(html);
@@ -109,6 +127,26 @@ const getDataCrawl = (html) => {
     return [];
   }
 };
+
+const getSeriFromPage = (html, filter) => {
+  const listSeri = html.match(/<\s*TD[^>]*><\s*a[^>]*>([0-9]{8})<\s*\/\s*a><\s*\/\s*TD>/gi);
+  const listTradeMark = html.match(/<\s*TD[^>]*><\s*a[^>]*>(?!(\s|LIVE|DEAD|[0-9]{7}))(.*)<\s*\/\s*a><\s*\/\s*TD>/gi);
+  if (listSeri) {
+    let newListSeri = []
+    for (let index = 0; index < listSeri.length; index++) {
+      if (listTradeMark[index] && listTradeMark[index].replace(/(<\s*a[^>]*>|<\/?a>)|(<\s*b[^>]*>|<\/?b>)|(<\s*td[^>]*>|<\/?td>)/gi, "").replace(/\s+/g, " ").toUpperCase() === filter.toUpperCase()) {
+        newListSeri.push(listSeri[index].replace(/(<\s*a[^>]*>|<\/?a>)|(<\s*td[^>]*>|<\/?td>)/gi, ""))
+      }
+    }
+
+
+    return newListSeri
+  } else {
+
+    return [];
+  }
+}
+
 
 const getDetailSeri = async (ids) => {
   return axios({
@@ -206,8 +244,30 @@ router.post("/", async function (req, res, next) {
       const htmlCrawl2 = await getHtmlCrawl1(textSearch);
       const listHtmlCrawl = [];
 
+
+      const listSeriPage = []
+
       for (const child of childSearchList) {
         const html = await getHtmlCrawl1(child);
+        let count = getCount(html);
+        let listLoadPage = []
+        if (count > 50) {
+          for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+            let loadPage = await getPage(globalSession.getCookie(),
+              globalSession.getSession().slice(0, -3) + "3.1", index * 50 + 1);
+            listLoadPage.push(loadPage)
+          }
+
+        }
+
+        try {
+          let listHtmlLoadPage = await Promise.all(listLoadPage);
+          let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child)).flat();
+          listSeriPage.push(...listSeriEachChild)
+        } catch (error) {
+          console.log(error)
+        }
+
         listHtmlCrawl.push(html);
       }
 
@@ -221,18 +281,45 @@ router.post("/", async function (req, res, next) {
         const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
         const listHtmlCrawlNew = [];
 
+        const listSeriPageNew = []
+
         for (const child of childSearchList) {
-          const html = await getHtmlCrawl1(child);
+          let html = await getHtmlCrawl1(child);
+          let count = getCount(html);
+          let listLoadPage = []
+          if (count > 50) {
+            for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+              let loadPage = await getPage(globalSession.getCookie(),
+                globalSession.getSession().slice(0, -3) + "3.1", index * 50 + 1);
+              listLoadPage.push(loadPage)
+            }
+
+          }
+
+          try {
+            let listHtmlLoadPage = await Promise.all(listLoadPage);
+            let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child)).flat();
+            listSeriPageNew.push(...listSeriEachChild);
+          } catch (error) {
+            console.log(error)
+          }
+
+
+
+
           listHtmlCrawlNew.push(html);
         }
+
 
         let listSeriMerge = Array.from(
           new Set([
             ...getDataCrawl(htmlCrawlNew1),
             ...getDataCrawl(htmlCrawlNew2),
-            ...listHtmlCrawlNew.map((item) => getDataCrawl(item)).flat(),
+            ...listSeriPageNew,
           ])
         );
+
+
 
         try {
           let listSplice = [];
@@ -245,9 +332,12 @@ router.post("/", async function (req, res, next) {
             listSplice.map((ids) => getDetailSeri(ids))
           );
 
+
           const mergeDetail = detailListSeri
             .map((item) => item.transactionList)
             .flat();
+
+
           const dataJson = mergeDetail.map((item) => {
             return {
               serial: item.trademarks[0].status.serialNumber,
@@ -277,7 +367,7 @@ router.post("/", async function (req, res, next) {
           );
 
           res.json({
-            tradeMarks: filterDataJson.slice((page - 1) * 25, page * 25),
+            tradeMarks: filterDataJson,
             status: "ok",
           });
         } catch (error) {
@@ -288,9 +378,10 @@ router.post("/", async function (req, res, next) {
           new Set([
             ...getDataCrawl(htmlCrawl1),
             ...getDataCrawl(htmlCrawl2),
-            ...listHtmlCrawl.map((item) => getDataCrawl(item)).flat(),
+            ...listSeriPage,
           ])
         );
+
 
         try {
           let listSplice = [];
@@ -302,6 +393,7 @@ router.post("/", async function (req, res, next) {
           const detailListSeri = await Promise.all(
             listSplice.map((ids) => getDetailSeri(ids))
           );
+
 
           const mergeDetail = detailListSeri
             .map((item) => item.transactionList)
@@ -334,7 +426,7 @@ router.post("/", async function (req, res, next) {
           );
 
           res.json({
-            tradeMarks: filterDataJson.slice((page - 1) * 25, page * 25),
+            tradeMarks: filterDataJson,
             status: "ok",
           });
         } catch (error) {

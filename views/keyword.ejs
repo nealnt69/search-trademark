@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Language" content="vi" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Search Trademark</title>
+  <title>Keyword</title>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
   <meta name="description" content="This is an example dashboard created using build-in elements and components." />
@@ -265,7 +265,7 @@
             <ul class="vertical-nav-menu">
               <li class="app-sidebar__heading">Danh mục</li>
               <li>
-                <a href="/" class="mm-active">
+                <a href="/">
                   TradeMark
                 </a>
               </li>
@@ -275,7 +275,7 @@
                 </a>
               </li>
               <li>
-                <a href="/keyword">
+                <a href="/keyword" class="mm-active">
                   Keyword
                 </a>
               </li>
@@ -396,14 +396,6 @@
         <div class="app-main__inner">
           <div class="row"></div>
 
-          <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
-            <li class="nav-item">
-              <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
-                <span>Key Search</span>
-              </a>
-            </li>
-          </ul>
-
           <div class="tab-content">
             <div class="tab-pane tabs-animation fade show active" role="tabpanel">
               <div class="row">
@@ -412,60 +404,34 @@
                     <div class="card-body">
                       <div class="position-relative form-group">
                         <span class="form-text text-muted">
-                          Nhập từ khóa
+                          Danh sách từ khóa
                         </span>
-                        <textarea name="text" id="text-search" class="form-control" style="height: 70px"></textarea>
-                      </div>
+                        <div id="list-trademark">
 
-                      <button id="btn-search" class="mt-1 btn btn-primary">
-                        Tìm kiếm
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tab-content">
-            <div class="tab-pane tabs-animation fade show active" role="tabpanel">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="main-card mb-3 card">
-                    <div class="card-body">
-                      <div class="position-relative form-group">
-                        <span class="form-text text-muted">
-                          Danh sách từ khóa lọc
-                        </span>
-                        <div id="list-filter" style="margin-top: 12px"></div>
-                      </div>
-
-                      <hr />
-                      <div class="position-relative form-group d-flex justify-content-between align-items-baseline">
-                        <div>
-                          <button class="btn btn-success btn-lg" style="position: relative; cursor: pointer">
-                            <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                            Chọn tệp
-                            <input name="file" id="file-exclude" type="file" class="form-control-file"
-                              accept=".xlsx,.xlsm" style="
-                                  position: absolute;
-                                  width: 100%;
-                                  height: 100%;
-                                  left: 0;
-                                  top: 0;
-                                  opacity: 0;
-                                  z-index: 9999;
-                                  cursor: pointer;
-                                " />
-                          </button>
-
-                          <small class="form-text text-muted">Chọn tệp excel muốn loại bỏ từ khóa.</small>
                         </div>
-                        <button class="btn btn-info btn-lg" style="position: relative; cursor: pointer" id="reset">
-                          <i class="fa fa-refresh" aria-hidden="true"></i>
-                          Reset
-                        </button>
                       </div>
+                      <div>
+                        <button class="btn btn-success btn-lg" style="position: relative; cursor: pointer">
+                          <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                          Chọn tệp
+                          <input name="file" id="file-trademark" type="file" class="form-control-file"
+                            accept=".xlsx,.xlsm" style="
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                left: 0;
+                                top: 0;
+                                opacity: 0;
+                                z-index: 9999;
+                                cursor: pointer;
+                              " />
+                        </button>
+
+                        <small class="form-text text-muted">Chọn tệp excel từ khóa.</small>
+                      </div>
+                      <button id="btn-save" class="mt-1 btn btn-primary">
+                        Lưu từ khóa
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -476,42 +442,23 @@
           <div class="row">
             <div class="col-md-12">
               <div class="main-card mb-3 card">
-                <div class="card-header" style="justify-content: space-between;">
-                  <div>
-                    Kết quả tìm kiếm &nbsp;<span class="text-info" id="text-count">0</span>
-                  </div>
-
-                  <div style="display: flex;align-items: center;">
-                    <p style="margin-right: 16px;font-size: 12px;">Lọc</p>
-                    <select class="form-control-sm form-control" id="filter-status">
-                      <option value="all" >Tất cả</option>
-                      <option value="live">LIVE</option>
-                      <option value="dead">DEAD</option>
-                    </select>
-                  </div>
+                <div class="card-header">
+                  Danh sách từ khóa
                 </div>
                 <div class="table-responsive">
                   <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                     <thead>
                       <tr>
-                        <th class="text-center">SERIAL</th>
-                        <th class="text-center">TRADEMARK</th>
-                        <th class="text-center">
-                          STATUS
-                        </th>
-                        <th class="text-center">TYPE</th>
-                        <th class="text-center">FILED ON</th>
-                        <th class="text-center">REGISTERS ON</th>
+                        <th class="text-center">STT</th>
+                        <th class="text-center">Từ khóa</th>
+                        <th class="text-center"></th>
+
                       </tr>
                     </thead>
-                    <tbody id="table-body-trade-mark"></tbody>
+                    <tbody id="table-body-key"></tbody>
                   </table>
                 </div>
-                <div class="d-flex justify-content-center card-footer">
-                  <button id="load-more" style="display: none" class="mb-2 mr-2 btn btn-primary">
-                    Tải thêm
-                  </button>
-                </div>
+
               </div>
             </div>
           </div>
@@ -525,6 +472,7 @@
   </div>
   <script type="text/javascript" src="/scripts/main.js"></script>
   <script type="text/javascript" src="/scripts/search.js"></script>
+  <script type="text/javascript" src="/scripts/keyword.js"></script>
 </body>
 
 </html>

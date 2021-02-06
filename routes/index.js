@@ -9,4 +9,8 @@ router.get("/key", function (req, res, next) {
   res.render("key");
 });
 
+router.get("/keyword", function (req, res, next) {
+  res.render("keyword");
+});
+
 module.exports = router;
