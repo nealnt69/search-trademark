@@ -254,7 +254,7 @@ router.post("/", async function (req, res, next) {
         if (count > 50) {
           for (let index = 1; index < 10 && index * 50 <= 500; index++) {
             let loadPage = await getPage(globalSession.getCookie(),
-              globalSession.getSession().slice(0, -3) + "3.1", index * 50 + 1);
+              globalSession.getSession().slice(0, -3) + "2.1", index * 50 + 1);
             listLoadPage.push(loadPage)
           }
 
@@ -290,7 +290,7 @@ router.post("/", async function (req, res, next) {
           if (count > 50) {
             for (let index = 1; index < 10 && index * 50 <= 500; index++) {
               let loadPage = await getPage(globalSession.getCookie(),
-                globalSession.getSession().slice(0, -3) + "3.1", index * 50 + 1);
+                globalSession.getSession().slice(0, -3) + "2.1", index * 50 + 1);
               listLoadPage.push(loadPage)
             }
 
