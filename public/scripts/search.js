@@ -144,7 +144,7 @@ btnLoadMore.on("click", () => {
 
 const render = tradeMarks => {
 
-  let keyword = JSON.parse(window.localStorage.getItem("list-trademark"));
+  let keyword = JSON.parse(window.localStorage.getItem("list-trademark")) || [];
 
 
   let contentTable = `${keyword
