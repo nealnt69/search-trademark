@@ -244,11 +244,20 @@ router.post("/", async function (req, res, next) {
 
     try {
 
-      await saveGlobal();
-
 
       let htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
       let htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
+
+
+      if (
+        !htmlCrawlNew1.includes("FOOTER END") &&
+        !htmlCrawlNew2.includes("FOOTER END")
+      ) {
+        await saveGlobal();
+        htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
+        htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
+      }
+
       let listSeriPageNew = []
 
       for (const child of childSearchList) {
