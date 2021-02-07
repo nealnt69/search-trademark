@@ -298,7 +298,7 @@ router.post("/", async function (req, res, next) {
 
           // }
 
-          let listSeriEachChild = getSeriFromPage(html, child);
+          let listSeriEachChild = getSeriFromPage(html, child) || [];
           listSeriPageNew = listSeriEachChild.flat().filter(item => item !== null)
         } catch (error) {
           console.log(error)
