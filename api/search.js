@@ -80,10 +80,9 @@ const saveGlobal = async () => {
     const $ = cheerio.load(dom[0]);
 
     console.log($("a").attr("href").split("state=")[1])
-    globalSession.setCookie(cookie);
     globalSession.setSession($("a").attr("href").split("state=")[1]);
   } catch (error) {
-    console.log(error)
+    console.log("loi session", error)
   }
 
 
