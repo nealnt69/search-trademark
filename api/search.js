@@ -66,8 +66,8 @@ const getSession = async (cookie) => {
 };
 
 const saveGlobal = async () => {
-  console.log("get cookie")
   const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
+  console.log("get cookie")
   const session = await getSession(cookie);
   console.log("cookie", cookie, "session", cookie)
   const dom = session.match(
