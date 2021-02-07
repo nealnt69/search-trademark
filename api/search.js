@@ -233,12 +233,13 @@ router.post("/", async function (req, res, next) {
   if (listKeyValid && listKeyValid.length > 0) {
     keys = listKeyValid
   }
-
+  
+  console.log("start")
   try {
     await saveGlobal();
 
   } catch (error) {
-    console.log(error)
+    console.log("ok")
   }
 
 
