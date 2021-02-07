@@ -52,7 +52,7 @@ const getCookie = async () => {
     url: "http://tmsearch.uspto.gov",
     method: "get",
     withCredentials: true,
-  }).then((response) => response.headers["set-cookie"]).catch(error => console.log(error));
+  }).then((response) => response.headers["set-cookie"]);
 };
 
 const getSession = async (cookie) => {
@@ -62,7 +62,7 @@ const getSession = async (cookie) => {
     headers: {
       Cookie: cookie,
     },
-  }).then((response) => response.data).catch(error => console.log(error));
+  }).then((response) => response.data);
 };
 
 const saveGlobal = async () => {
@@ -237,7 +237,6 @@ router.post("/", async function (req, res, next) {
   console.log("start")
   try {
     await saveGlobal();
-
   } catch (error) {
     console.log("ok")
   }
