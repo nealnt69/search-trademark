@@ -397,7 +397,8 @@ router.post("/", async function (req, res, next) {
           });
         } catch (error) {
           console.log(error)
-          res.json({ status: "error" });
+          res.json({ status: "error", err: error });
+
         }
       } else {
         let listSeriMerge = Array.from(
@@ -457,13 +458,15 @@ router.post("/", async function (req, res, next) {
           });
         } catch (error) {
           console.log(error)
-          res.json({ status: "error" });
+          res.json({ status: "error", err: error });
+
         }
-        res.json({ status: "error" });
+        res.json({ status: "error", err: error });
+
       }
     } catch (error) { }
-
-    res.end();
+    console.log(error)
+    res.json({ status: "error", err: error });
   }
 });
 
