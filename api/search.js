@@ -269,7 +269,8 @@ router.post("/", async function (req, res, next) {
           let indexSession = 1;
           while (whileLoopStop === 0) {
             console.log(indexSession)
-            if (count > 0) {
+            if (count > 50) {
+
               for (let index = 0; index < 10 && index * 50 <= 500 && index * 50 < count + 50; index++) {
                 let loadPage = await getPage(globalSession.getCookie(),
                   globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
@@ -279,7 +280,7 @@ router.post("/", async function (req, res, next) {
                 let listHtmlLoadPage = await Promise.all(listLoadPage);
                 let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
                 if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-                  indexSession++
+                  indexSession++;
                 }
                 else {
                   listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
@@ -288,6 +289,7 @@ router.post("/", async function (req, res, next) {
               } catch (error) {
                 console.log(error)
               }
+              whileLoopStop++
             }
             else {
               whileLoopStop++
