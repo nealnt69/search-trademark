@@ -266,21 +266,21 @@ router.post("/", async function (req, res, next) {
 
 
 
-      const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
-      const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
+      let htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
+      let htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
 
       if (
-        !htmlCrawl1.includes("FOOTER END") &&
-        !htmlCrawl2.includes("FOOTER END")
+        !htmlCrawlNew1.includes("FOOTER END") &&
+        !htmlCrawlNew2.includes("FOOTER END")
       ) {
         await saveGlobal();
         htmlCrawlNew1 = await getHtmlCrawl2(textSearch)
         htmlCrawlNew2 = await getHtmlCrawl1(textSearch)
       }
 
-      const listHtmlCrawlNew = [];
+      let listHtmlCrawlNew = [];
 
-      const listSeriPageNew = []
+      let listSeriPageNew = []
 
       for (const child of childSearchList) {
         try {
