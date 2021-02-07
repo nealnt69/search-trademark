@@ -235,12 +235,18 @@ router.post("/", async function (req, res, next) {
   }
 
   console.log("start")
-  try {
+  let stopGetCookie = 0;
 
-    await saveGlobal();
-  } catch (error) {
-    console.log("loi o day")
+  while (stopGetCookie === 0) {
+    try {
+      await saveGlobal();
+      stopGetCookie++
+    } catch (error) {
+      console.log("loi o day")
+    }
   }
+
+
 
 
 
