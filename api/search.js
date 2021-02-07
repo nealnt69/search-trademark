@@ -269,9 +269,8 @@ router.post("/", async function (req, res, next) {
           let indexSession = 1;
           while (whileLoopStop === 0) {
             console.log(indexSession)
-            if (count > 50) {
-
-              for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+            if (count > 0) {
+              for (let index = 0; index < 10 && index * 50 <= 500 && index * 50 < count + 50; index++) {
                 let loadPage = await getPage(globalSession.getCookie(),
                   globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
                 listLoadPage.push(loadPage)
