@@ -253,6 +253,7 @@ router.post("/", async function (req, res, next) {
         !htmlCrawlNew1.includes("FOOTER END") &&
         !htmlCrawlNew2.includes("FOOTER END")
       ) {
+        console.log("ok")
         await saveGlobal();
         htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
         htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
