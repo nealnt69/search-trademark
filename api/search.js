@@ -239,15 +239,15 @@ router.post("/", async function (req, res, next) {
     res.status(200).json({ status: "error" });
   } else {
     try {
-      const htmlCrawl1 = await getHtmlCrawl2(textSearch);
+      // const htmlCrawl1 = await getHtmlCrawl2(textSearch);
 
-      const htmlCrawl2 = await getHtmlCrawl1(textSearch);
+      // const htmlCrawl2 = await getHtmlCrawl1(textSearch);
 
 
-      if (
-        !htmlCrawl1.includes("FOOTER END") &&
-        !htmlCrawl2.includes("FOOTER END")
-      ) {
+      // if (
+      //   !htmlCrawl1.includes("FOOTER END") &&
+      //   !htmlCrawl2.includes("FOOTER END")
+      // ) {
 
         const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
         const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
@@ -363,120 +363,120 @@ router.post("/", async function (req, res, next) {
           res.json({ status: "error", err: error });
 
         }
-      } else {
-        const listHtmlCrawl = [];
+      // } else {
+      //   const listHtmlCrawl = [];
 
 
-        const listSeriPage = [];
+      //   const listSeriPage = [];
 
 
 
-        for (const child of childSearchList) {
-          try {
-            const html = await getHtmlCrawl1(child);
-            let count = getCount(html);
-            let listLoadPage = [];
-            let whileLoopStop = 0;
-            let indexSession = 1;
-            while (whileLoopStop === 0) {
-              console.log(indexSession)
-              if (count > 50) {
+      //   for (const child of childSearchList) {
+      //     try {
+      //       const html = await getHtmlCrawl1(child);
+      //       let count = getCount(html);
+      //       let listLoadPage = [];
+      //       let whileLoopStop = 0;
+      //       let indexSession = 1;
+      //       while (whileLoopStop === 0) {
+      //         console.log(indexSession)
+      //         if (count > 50) {
 
-                for (let index = 1; index < 10 && index * 50 <= 500; index++) {
-                  let loadPage = await getPage(globalSession.getCookie(),
-                    globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
-                  listLoadPage.push(loadPage)
-                }
-                try {
-                  let listHtmlLoadPage = await Promise.all(listLoadPage);
-                  let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
-                  if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-                    indexSession++
-                  }
-                  else {
-                    console.log(listSeriEachChild)
+      //           for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+      //             let loadPage = await getPage(globalSession.getCookie(),
+      //               globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
+      //             listLoadPage.push(loadPage)
+      //           }
+      //           try {
+      //             let listHtmlLoadPage = await Promise.all(listLoadPage);
+      //             let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
+      //             if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
+      //               indexSession++
+      //             }
+      //             else {
+      //               console.log(listSeriEachChild)
 
-                    listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
-                    whileLoopStop++
-                  }
-                } catch (error) {
-                  console.log(error)
-                }
-              }
-              else {
-                whileLoopStop++
-              }
-
-
-            }
-            listHtmlCrawl.push(html);
-          } catch (error) {
-            console.log(error)
-          }
-        }
-
-        let listSeriMerge = Array.from(
-          new Set([
-            ...getDataCrawl(htmlCrawl1),
-            ...getDataCrawl(htmlCrawl2),
-            ...listSeriPage,
-          ])
-        );
+      //               listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
+      //               whileLoopStop++
+      //             }
+      //           } catch (error) {
+      //             console.log(error)
+      //           }
+      //         }
+      //         else {
+      //           whileLoopStop++
+      //         }
 
 
-        try {
-          let listSplice = [];
+      //       }
+      //       listHtmlCrawl.push(html);
+      //     } catch (error) {
+      //       console.log(error)
+      //     }
+      //   }
 
-          while (listSeriMerge.length > 0) {
-            listSplice.push(listSeriMerge.splice(0, 25).join(","));
-          }
+      //   let listSeriMerge = Array.from(
+      //     new Set([
+      //       ...getDataCrawl(htmlCrawl1),
+      //       ...getDataCrawl(htmlCrawl2),
+      //       ...listSeriPage,
+      //     ])
+      //   );
 
-          const detailListSeri = await Promise.all(
-            listSplice.map((ids) => getDetailSeri(ids))
-          );
+
+      //   try {
+      //     let listSplice = [];
+
+      //     while (listSeriMerge.length > 0) {
+      //       listSplice.push(listSeriMerge.splice(0, 25).join(","));
+      //     }
+
+      //     const detailListSeri = await Promise.all(
+      //       listSplice.map((ids) => getDetailSeri(ids))
+      //     );
 
 
-          const mergeDetail = detailListSeri
-            .map((item) => item.transactionList)
-            .flat();
+      //     const mergeDetail = detailListSeri
+      //       .map((item) => item.transactionList)
+      //       .flat();
 
-          const dataJson = mergeDetail.map((item) => ({
-            serial: item.trademarks[0].status.serialNumber,
-            trademark: item.trademarks[0].status.markElement,
-            status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
-            type:
-              item.trademarks[0].status.markDrawingCd == "4" ||
-                item.trademarks[0].status.markDrawingCd == "1"
-                ? "Text"
-                : "Design",
-            fieldOn: item.trademarks[0].status.filingDate,
-            registerDate:
-              item.trademarks[0].status.usRegistrationNumber != ""
-                ? item.trademarks[0].status.usRegistrationDate
-                : "Chưa đăng ký",
-            des: item.trademarks[0].gsList
-              .map((item) => item.description)
-              .join(" "),
-          }));
+      //     const dataJson = mergeDetail.map((item) => ({
+      //       serial: item.trademarks[0].status.serialNumber,
+      //       trademark: item.trademarks[0].status.markElement,
+      //       status: item.trademarks[0].status.tm5StatusDesc.split("/")[0],
+      //       type:
+      //         item.trademarks[0].status.markDrawingCd == "4" ||
+      //           item.trademarks[0].status.markDrawingCd == "1"
+      //           ? "Text"
+      //           : "Design",
+      //       fieldOn: item.trademarks[0].status.filingDate,
+      //       registerDate:
+      //         item.trademarks[0].status.usRegistrationNumber != ""
+      //           ? item.trademarks[0].status.usRegistrationDate
+      //           : "Chưa đăng ký",
+      //       des: item.trademarks[0].gsList
+      //         .map((item) => item.description)
+      //         .join(" "),
+      //     }));
 
-          const filterDataJson = filterData(
-            dataJson,
-            textSearch,
-            filter,
-            childSearchList
-          );
+      //     const filterDataJson = filterData(
+      //       dataJson,
+      //       textSearch,
+      //       filter,
+      //       childSearchList
+      //     );
 
-          res.json({
-            tradeMarks: filterDataJson,
-            status: "ok",
-          });
-        } catch (error) {
-          console.log(error)
-          res.json({ status: "error", err: error });
+      //     res.json({
+      //       tradeMarks: filterDataJson,
+      //       status: "ok",
+      //     });
+      //   } catch (error) {
+      //     console.log(error)
+      //     res.json({ status: "error", err: error });
 
-        }
+      //   }
 
-      }
+      // }
     } catch (error) {
       console.log(error)
       res.end();
