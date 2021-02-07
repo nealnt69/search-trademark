@@ -78,8 +78,6 @@ const saveGlobal = async () => {
       /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
     );
     const $ = cheerio.load(dom[0]);
-
-    console.log($("a").attr("href").split("state=")[1])
     globalSession.setSession($("a").attr("href").split("state=")[1]);
   } catch (error) {
     console.log("loi session", error)
