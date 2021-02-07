@@ -241,17 +241,10 @@ router.post("/", async function (req, res, next) {
   }
 
   console.log("start")
-  let stopGetCookie = 0;
 
-  while (stopGetCookie === 0) {
-    try {
-      await saveGlobal();
-      stopGetCookie++
-    } catch (error) {
-      stopGetCookie++
 
-    }
-  }
+  await saveGlobal();
+
 
 
 
