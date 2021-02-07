@@ -268,38 +268,39 @@ router.post("/", async function (req, res, next) {
           let listLoadPage = []
           let whileLoopStop = 0;
           let indexSession = 1;
-          // while (whileLoopStop === 0) {
-          //   console.log(indexSession)
-          //   if (count > 50) {
+          while (whileLoopStop === 0) {
+            console.log(indexSession)
+            if (count > 50) {
 
-          //     for (let index = 1; index < 10 && index * 50 <= 500 && index * 50 < count + 50; index++) {
-          //       let loadPage = await getPage(globalSession.getCookie(),
-          //         globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
-          //       listLoadPage.push(loadPage)
-          //     }
-          //     try {
-          //       let listHtmlLoadPage = await Promise.all(listLoadPage);
-          //       let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
-          //       if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-          //         indexSession++;
-          //       }
-          //       else {
-          //         listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
-          //         whileLoopStop++
-          //       }
-          //     } catch (error) {
-          //       console.log(error)
-          //     }
-          //   }
-          //   else {
-          //     whileLoopStop++
-          //   }
+              for (let index = 1; index < 10 && index * 50 <= 500 && index * 50 < count + 50; index++) {
+                let loadPage = await getPage(globalSession.getCookie(),
+                  globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
+                listLoadPage.push(loadPage)
+              }
+              try {
+                let listHtmlLoadPage = await Promise.all(listLoadPage);
+                let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
+                if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
+                  indexSession++;
+                }
+                else {
+                  let listSeriFirst = getSeriFromPage(html, child) || [];
+                  listSeriPageNew.push(...listSeriFirst)
+                  listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
+                  whileLoopStop++
+                }
+              } catch (error) {
+                console.log(error)
+              }
+            }
+            else {
+              whileLoopStop++
+            }
 
 
-          // }
+          }
 
-          let listSeriEachChild = getSeriFromPage(html, child) || [];
-          listSeriPageNew = listSeriEachChild.flat().filter(item => item !== null)
+
         } catch (error) {
           console.log(error)
         }
