@@ -83,7 +83,7 @@ const saveGlobal = async () => {
     globalSession.setCookie(cookie);
     globalSession.setSession($("a").attr("href").split("state=")[1]);
   } catch (error) {
-    console.log("loi session")
+    console.log(error)
   }
 
 
