@@ -234,16 +234,6 @@ router.post("/", async function (req, res, next) {
 
   console.log("start")
 
-  let stopGetCookie = 0;
-
-  while (stopGetCookie === 0) {
-    try {
-      await saveGlobal();
-      stopGetCookie++
-    } catch (error) {
-      stopGetCookie++
-    }
-  }
 
   if (!textSearch) {
     res.status(200).json({ status: "error" });
@@ -253,6 +243,10 @@ router.post("/", async function (req, res, next) {
 
 
     try {
+
+      await saveGlobal();
+
+
       let htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
       let htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
       let listSeriPageNew = []
