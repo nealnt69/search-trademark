@@ -464,9 +464,10 @@ router.post("/", async function (req, res, next) {
         res.json({ status: "error" });
 
       }
-    } catch (error) { }
-    console.log(error)
-    res.json({ status: "error", err: error });
+    } catch (error) {
+      console.log(error)
+      res.json({ status: "error", err: error });
+    }
   }
 });
 
