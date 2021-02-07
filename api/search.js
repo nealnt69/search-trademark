@@ -254,6 +254,8 @@ router.post("/", async function (req, res, next) {
   if (!textSearch) {
     res.status(200).json({ status: "error" });
   } else {
+
+    console.log("get link")
     try {
       // const htmlCrawl1 = await getHtmlCrawl2(textSearch);
 
@@ -265,15 +267,15 @@ router.post("/", async function (req, res, next) {
       //   !htmlCrawl2.includes("FOOTER END")
       // ) {
 
-      // const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
-      // const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
+      const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
+      const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
       const listHtmlCrawlNew = [];
 
       const listSeriPageNew = []
 
       for (const child of childSearchList) {
         try {
-          // let html = await getHtmlCrawl1(child);
+          let html = await getHtmlCrawl1(child);
           let count = getCount(html);
           let listLoadPage = []
           let whileLoopStop = 0;
@@ -317,8 +319,8 @@ router.post("/", async function (req, res, next) {
 
       let listSeriMerge = Array.from(
         new Set([
-          // ...getDataCrawl(htmlCrawlNew1),
-          // ...getDataCrawl(htmlCrawlNew2),
+          ...getDataCrawl(htmlCrawlNew1),
+          ...getDataCrawl(htmlCrawlNew2),
           ...listSeriPageNew,
         ])
       );
