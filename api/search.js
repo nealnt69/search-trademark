@@ -284,6 +284,7 @@ router.post("/", async function (req, res, next) {
                   indexSession++;
                 }
                 else {
+                  globalSession.setSession(globalSession.getSession().slice(0, -3) + indexSession + ".1")
                   listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
                   whileLoopStop++
                 }
