@@ -68,6 +68,7 @@ const getSession = async (cookie) => {
 const saveGlobal = async () => {
   const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
   const session = await getSession(cookie);
+  console.log("cookie", cookie, "session", cookie)
   const dom = session.match(
     /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
   );
