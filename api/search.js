@@ -253,6 +253,7 @@ router.post("/", async function (req, res, next) {
         let whileLoopStop = 0;
         let indexSession = 1;
         while (whileLoopStop === 0) {
+          console.log(indexSession)
           if (count > 50) {
 
             for (let index = 1; index < 10 && index * 50 <= 500; index++) {
@@ -305,6 +306,7 @@ router.post("/", async function (req, res, next) {
           let whileLoopStop = 0;
           let indexSession = 1;
           while (whileLoopStop === 0) {
+            console.log(indexSession)
             if (count > 50) {
 
               for (let index = 1; index < 10 && index * 50 <= 500; index++) {
@@ -466,7 +468,7 @@ router.post("/", async function (req, res, next) {
       }
     } catch (error) {
       console.log(error)
-      res.json({ status: "error", err: error });
+      res.end();
     }
   }
 });
