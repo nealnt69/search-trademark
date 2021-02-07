@@ -68,18 +68,19 @@ const getSession = async (cookie) => {
 const saveGlobal = async () => {
   try {
     const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
+    const session = await getSession(cookie);
+    console.log("cookie", cookie, "session", cookie)
+    const dom = session.match(
+      /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
+    );
+    const $ = cheerio.load(dom[0]);
+
+    globalSession.setCookie(cookie);
+    globalSession.setSession($("a").attr("href").split("state=")[1]);
   } catch (error) {
     console.log("loi day")
   }
-  const session = await getSession(cookie);
-  console.log("cookie", cookie, "session", cookie)
-  const dom = session.match(
-    /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
-  );
-  const $ = cheerio.load(dom[0]);
 
-  globalSession.setCookie(cookie);
-  globalSession.setSession($("a").attr("href").split("state=")[1]);
 };
 
 const getHtmlCrawl1 = async (textSearch) => {
@@ -136,7 +137,6 @@ const getDataCrawl = (html) => {
 const getSeriFromPage = (html, filter) => {
   const listSeri = html.match(/<\s*TD[^>]*><\s*a[^>]*>([0-9]{8})<\s*\/\s*a><\s*\/\s*TD>/gi);
   const listTradeMark = html.match(/<\s*TD[^>]*><\s*a[^>]*>(?!(\s|LIVE|DEAD|[0-9]{7}))(.*)<\s*\/\s*a><\s*\/\s*TD>/gi);
-  console.log(listSeri, listTradeMark)
   if (listSeri) {
     let newListSeri = []
     for (let index = 0; index < listSeri.length; index++) {
