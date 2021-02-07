@@ -131,6 +131,7 @@ const getDataCrawl = (html) => {
 const getSeriFromPage = (html, filter) => {
   const listSeri = html.match(/<\s*TD[^>]*><\s*a[^>]*>([0-9]{8})<\s*\/\s*a><\s*\/\s*TD>/gi);
   const listTradeMark = html.match(/<\s*TD[^>]*><\s*a[^>]*>(?!(\s|LIVE|DEAD|[0-9]{7}))(.*)<\s*\/\s*a><\s*\/\s*TD>/gi);
+  console.log(listSeri,listTradeMark)
   if (listSeri) {
     let newListSeri = []
     for (let index = 0; index < listSeri.length; index++) {
