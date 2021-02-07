@@ -75,6 +75,7 @@ const saveGlobal = async () => {
   }
   try {
     const session = await getSession(cookie);
+    console.log(session)
     const dom = session.match(
       /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
     );
