@@ -131,7 +131,7 @@ const getDataCrawl = (html) => {
 const getSeriFromPage = (html, filter) => {
   const listSeri = html.match(/<\s*TD[^>]*><\s*a[^>]*>([0-9]{8})<\s*\/\s*a><\s*\/\s*TD>/gi);
   const listTradeMark = html.match(/<\s*TD[^>]*><\s*a[^>]*>(?!(\s|LIVE|DEAD|[0-9]{7}))(.*)<\s*\/\s*a><\s*\/\s*TD>/gi);
-  console.log(listSeri,listTradeMark)
+  console.log(listSeri, listTradeMark)
   if (listSeri) {
     let newListSeri = []
     for (let index = 0; index < listSeri.length; index++) {
@@ -256,42 +256,46 @@ router.post("/", async function (req, res, next) {
         const listSeriPageNew = []
 
         for (const child of childSearchList) {
-          let html = await getHtmlCrawl1(child);
-          let count = getCount(html);
-          let listLoadPage = []
-          let whileLoopStop = 0;
-          let indexSession = 1;
-          while (whileLoopStop === 0) {
-            console.log(indexSession)
-            if (count > 50) {
+          try {
+            let html = await getHtmlCrawl1(child);
+            let count = getCount(html);
+            let listLoadPage = []
+            let whileLoopStop = 0;
+            let indexSession = 1;
+            while (whileLoopStop === 0) {
+              console.log(indexSession)
+              if (count > 50) {
 
-              for (let index = 1; index < 10 && index * 50 <= 500; index++) {
-                let loadPage = await getPage(globalSession.getCookie(),
-                  globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
-                listLoadPage.push(loadPage)
-              }
-              try {
-                let listHtmlLoadPage = await Promise.all(listLoadPage);
-                let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
-                if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-                  indexSession++
+                for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+                  let loadPage = await getPage(globalSession.getCookie(),
+                    globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
+                  listLoadPage.push(loadPage)
                 }
-                else {
-                  console.log(listSeriEachChild)
-                  listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
-                  whileLoopStop++
+                try {
+                  let listHtmlLoadPage = await Promise.all(listLoadPage);
+                  let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
+                  if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
+                    indexSession++
+                  }
+                  else {
+                    console.log(listSeriEachChild)
+                    listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
+                    whileLoopStop++
+                  }
+                } catch (error) {
+                  console.log(error)
                 }
-              } catch (error) {
-                console.log(error)
               }
-            }
-            else {
-              whileLoopStop++
-            }
+              else {
+                whileLoopStop++
+              }
 
 
+            }
+            listHtmlCrawlNew.push(html);
+          } catch (error) {
+            console.log(error)
           }
-          listHtmlCrawlNew.push(html);
         }
 
 
@@ -368,46 +372,47 @@ router.post("/", async function (req, res, next) {
 
 
         for (const child of childSearchList) {
-          const html = await getHtmlCrawl1(child);
-          let count = getCount(html);
-          let listLoadPage = [];
-          let whileLoopStop = 0;
-          let indexSession = 1;
-          while (whileLoopStop === 0) {
-            console.log(indexSession)
-            if (count > 50) {
+          try {
+            const html = await getHtmlCrawl1(child);
+            let count = getCount(html);
+            let listLoadPage = [];
+            let whileLoopStop = 0;
+            let indexSession = 1;
+            while (whileLoopStop === 0) {
+              console.log(indexSession)
+              if (count > 50) {
 
-              for (let index = 1; index < 10 && index * 50 <= 500; index++) {
-                let loadPage = await getPage(globalSession.getCookie(),
-                  globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
-                listLoadPage.push(loadPage)
-              }
-              try {
-                let listHtmlLoadPage = await Promise.all(listLoadPage);
-                let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
-                if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-                  indexSession++
+                for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+                  let loadPage = await getPage(globalSession.getCookie(),
+                    globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
+                  listLoadPage.push(loadPage)
                 }
-                else {
-                  console.log(listSeriEachChild)
+                try {
+                  let listHtmlLoadPage = await Promise.all(listLoadPage);
+                  let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
+                  if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
+                    indexSession++
+                  }
+                  else {
+                    console.log(listSeriEachChild)
 
-                  listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
-                  whileLoopStop++
+                    listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
+                    whileLoopStop++
+                  }
+                } catch (error) {
+                  console.log(error)
                 }
-              } catch (error) {
-                console.log(error)
               }
-            }
-            else {
-              whileLoopStop++
-            }
+              else {
+                whileLoopStop++
+              }
 
 
+            }
+            listHtmlCrawl.push(html);
+          } catch (error) {
+            console.log(error)
           }
-
-
-
-          listHtmlCrawl.push(html);
         }
 
         let listSeriMerge = Array.from(
