@@ -59,7 +59,9 @@ const getSession = async (cookie) => {
   return axios({
     url: "http://tmsearch.uspto.gov",
     method: "get",
-
+    headers: {
+      Cookie: cookie,
+    },
     withCredentials: true,
   }).then((response) => response.data);
 };
