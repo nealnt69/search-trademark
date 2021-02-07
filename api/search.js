@@ -66,25 +66,15 @@ const getSession = async (cookie) => {
 };
 
 const saveGlobal = async () => {
-  let cookie = globalSession.getCookie();
+  const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
+  const session = await getSession(cookie);
+  const dom = session.match(
+    /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
+  );
+  const $ = cheerio.load(dom[0]);
 
-  try {
-    cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
-  } catch (error) {
-    console.log("loi day")
-  }
-  try {
-    const session = await getSession(cookie);
-    const dom = session.match(
-      /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
-    );
-    const $ = cheerio.load(dom[0]);
-    globalSession.setSession($("a").attr("href").split("state=")[1]);
-  } catch (error) {
-    console.log("loi session", error)
-  }
-
-
+  globalSession.setCookie(cookie);
+  globalSession.setSession($("a").attr("href").split("state=")[1]);
 };
 
 const getHtmlCrawl1 = async (textSearch) => {
@@ -244,7 +234,16 @@ router.post("/", async function (req, res, next) {
 
   console.log("start")
 
-  await saveGlobal();
+  let stopGetCookie = 0;
+
+  while (stopGetCookie === 0) {
+    try {
+      await saveGlobal();
+      stopGetCookie++
+    } catch (error) {
+      stopGetCookie++
+    }
+  }
 
   if (!textSearch) {
     res.status(200).json({ status: "error" });
