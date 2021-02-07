@@ -66,20 +66,22 @@ const getSession = async (cookie) => {
 };
 
 const saveGlobal = async () => {
+  let cookie = globalSession.getCookie()
   try {
-    const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
-    const session = await getSession(cookie);
-    console.log("cookie", cookie, "session", cookie)
-    const dom = session.match(
-      /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
-    );
-    const $ = cheerio.load(dom[0]);
-
-    globalSession.setCookie(cookie);
-    globalSession.setSession($("a").attr("href").split("state=")[1]);
+    cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
   } catch (error) {
     console.log("loi day")
   }
+  const session = await getSession(cookie);
+  const dom = session.match(
+    /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
+  );
+  const $ = cheerio.load(dom[0]);
+
+  console.log($("a").attr("href").split("state=")[1])
+  globalSession.setCookie(cookie);
+  globalSession.setSession($("a").attr("href").split("state=")[1]);
+
 
 };
 
