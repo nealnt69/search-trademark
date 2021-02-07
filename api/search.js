@@ -62,7 +62,6 @@ const getSession = async (cookie) => {
     headers: {
       Cookie: cookie,
     },
-    withCredentials: true,
   }).then((response) => response.data);
 };
 
@@ -75,7 +74,6 @@ const saveGlobal = async () => {
     console.log("loi day")
   }
   try {
-    console.log(cookie)
     const session = await getSession(cookie);
     const dom = session.match(
       /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
@@ -246,40 +244,18 @@ router.post("/", async function (req, res, next) {
 
   console.log("start")
 
-
-
-
-
-
-
+  await saveGlobal();
 
   if (!textSearch) {
     res.status(200).json({ status: "error" });
   } else {
 
     console.log("get link")
+
+
     try {
-      // const htmlCrawl1 = await getHtmlCrawl2(textSearch);
-
-      // const htmlCrawl2 = await getHtmlCrawl1(textSearch);
-
-
-
-
       let htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
       let htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
-
-      if (
-        !htmlCrawlNew1.includes("FOOTER END") &&
-        !htmlCrawlNew2.includes("FOOTER END")
-      ) {
-        await saveGlobal();
-        htmlCrawlNew1 = await getHtmlCrawl2(textSearch)
-        htmlCrawlNew2 = await getHtmlCrawl1(textSearch)
-      }
-
-      let listHtmlCrawlNew = [];
-
       let listSeriPageNew = []
 
       for (const child of childSearchList) {
@@ -318,7 +294,6 @@ router.post("/", async function (req, res, next) {
 
 
           }
-          listHtmlCrawlNew.push(html);
         } catch (error) {
           console.log(error)
         }
