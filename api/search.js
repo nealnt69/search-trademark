@@ -239,55 +239,7 @@ router.post("/", async function (req, res, next) {
       const htmlCrawl1 = await getHtmlCrawl2(textSearch);
 
       const htmlCrawl2 = await getHtmlCrawl1(textSearch);
-      const listHtmlCrawl = [];
 
-
-      const listSeriPage = [];
-
-
-
-      for (const child of childSearchList) {
-        const html = await getHtmlCrawl1(child);
-        let count = getCount(html);
-        let listLoadPage = [];
-        let whileLoopStop = 0;
-        let indexSession = 1;
-        while (whileLoopStop === 0) {
-          console.log(indexSession)
-          if (count > 50) {
-
-            for (let index = 1; index < 10 && index * 50 <= 500; index++) {
-              let loadPage = await getPage(globalSession.getCookie(),
-                globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
-              listLoadPage.push(loadPage)
-            }
-            try {
-              let listHtmlLoadPage = await Promise.all(listLoadPage);
-              let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
-              if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
-                indexSession++
-              }
-              else {
-                console.log(listSeriEachChild)
-
-                listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
-                whileLoopStop++
-              }
-            } catch (error) {
-              console.log(error)
-            }
-          }
-          else {
-            whileLoopStop++
-          }
-
-
-        }
-
-
-
-        listHtmlCrawl.push(html);
-      }
 
       if (
         !htmlCrawl1.includes("FOOTER END") &&
@@ -406,6 +358,56 @@ router.post("/", async function (req, res, next) {
 
         }
       } else {
+        const listHtmlCrawl = [];
+
+
+        const listSeriPage = [];
+
+
+
+        for (const child of childSearchList) {
+          const html = await getHtmlCrawl1(child);
+          let count = getCount(html);
+          let listLoadPage = [];
+          let whileLoopStop = 0;
+          let indexSession = 1;
+          while (whileLoopStop === 0) {
+            console.log(indexSession)
+            if (count > 50) {
+
+              for (let index = 1; index < 10 && index * 50 <= 500; index++) {
+                let loadPage = await getPage(globalSession.getCookie(),
+                  globalSession.getSession().slice(0, -3) + indexSession + ".1", index * 50 + 1);
+                listLoadPage.push(loadPage)
+              }
+              try {
+                let listHtmlLoadPage = await Promise.all(listLoadPage);
+                let listSeriEachChild = listHtmlLoadPage.map(item => getSeriFromPage(item, child));
+                if (listSeriEachChild.every(element => element === null) && indexSession < 10) {
+                  indexSession++
+                }
+                else {
+                  console.log(listSeriEachChild)
+
+                  listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
+                  whileLoopStop++
+                }
+              } catch (error) {
+                console.log(error)
+              }
+            }
+            else {
+              whileLoopStop++
+            }
+
+
+          }
+
+
+
+          listHtmlCrawl.push(html);
+        }
+
         let listSeriMerge = Array.from(
           new Set([
             ...getDataCrawl(htmlCrawl1),
