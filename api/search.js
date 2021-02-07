@@ -456,7 +456,8 @@ router.post("/", async function (req, res, next) {
             status: "ok",
           });
         } catch (error) {
-          res.json();
+          console.log(error)
+          res.json({ status: "error" });
         }
         res.json({ status: "error" });
       }
