@@ -66,16 +66,21 @@ const getSession = async (cookie) => {
 };
 
 const saveGlobal = async () => {
-  const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
-  const session = await getSession(cookie);
-  console.log("cookie", cookie, "session", cookie)
-  const dom = session.match(
-    /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
-  );
-  const $ = cheerio.load(dom[0]);
+  try {
+    const cookie = (await getCookie()).map((i) => i.split(";")[0]).join("; ");
+    const session = await getSession(cookie);
+    console.log("cookie", cookie, "session", cookie)
+    const dom = session.match(
+      /<\s*a[^>]*>(Basic Word Mark Search.*)<\s*\/\s*a>/gi
+    );
+    const $ = cheerio.load(dom[0]);
 
-  globalSession.setCookie(cookie);
-  globalSession.setSession($("a").attr("href").split("state=")[1]);
+    globalSession.setCookie(cookie);
+    globalSession.setSession($("a").attr("href").split("state=")[1]);
+  } catch (error) {
+    console.log("err", error)
+  }
+
 };
 
 const getHtmlCrawl1 = async (textSearch) => {
@@ -233,13 +238,10 @@ router.post("/", async function (req, res, next) {
   if (listKeyValid && listKeyValid.length > 0) {
     keys = listKeyValid
   }
-  
+
   console.log("start")
-  try {
-    await saveGlobal();
-  } catch (error) {
-    console.log("ok")
-  }
+  await saveGlobal();
+
 
 
   if (!textSearch) {
