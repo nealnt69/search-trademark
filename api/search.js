@@ -265,7 +265,7 @@ router.post("/", async function (req, res, next) {
       //   !htmlCrawl2.includes("FOOTER END")
       // ) {
 
-      const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
+      // const htmlCrawlNew1 = await getHtmlCrawl2(textSearch);
       const htmlCrawlNew2 = await getHtmlCrawl1(textSearch);
       const listHtmlCrawlNew = [];
 
@@ -317,7 +317,7 @@ router.post("/", async function (req, res, next) {
 
       let listSeriMerge = Array.from(
         new Set([
-          ...getDataCrawl(htmlCrawlNew1),
+          // ...getDataCrawl(htmlCrawlNew1),
           ...getDataCrawl(htmlCrawlNew2),
           ...listSeriPageNew,
         ])
