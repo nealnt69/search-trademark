@@ -268,6 +268,8 @@ router.post("/", async function (req, res, next) {
                 indexSession++
               }
               else {
+                console.log(listSeriEachChild)
+
                 listSeriPage.push(...listSeriEachChild.flat().filter(item => item !== null));
                 whileLoopStop++
               }
@@ -321,6 +323,7 @@ router.post("/", async function (req, res, next) {
                   indexSession++
                 }
                 else {
+                  console.log(listSeriEachChild)
                   listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
                   whileLoopStop++
                 }
