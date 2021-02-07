@@ -273,7 +273,7 @@ router.post("/", async function (req, res, next) {
 
       for (const child of childSearchList) {
         try {
-          let html = await getHtmlCrawl1(child);
+          // let html = await getHtmlCrawl1(child);
           let count = getCount(html);
           let listLoadPage = []
           let whileLoopStop = 0;
