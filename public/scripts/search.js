@@ -41,6 +41,15 @@ $(document).ready(function () {
     );
   }
 
+  let timeCountDownSearch = localStorage.getItem("last-search");
+  if (timeCountDownSearch && new Date() - new Date(timeCountDownSearch) < 30000) {
+    $("#btn-search").css("display", "none");
+    $("#time").css("display", "block");
+    let dur = 30 - Math.ceil((new Date() - new Date(timeCountDownSearch)) / 1000),
+      display = document.querySelector('#time');
+    startTimer(dur, display);
+  }
+
   btnSearch.addEventListener("click", () => {
     textSearching = textSearch.value;
     pageSearching = 1;
@@ -233,7 +242,13 @@ const getData = async (page, type = "search") => {
         timeout: 60000,
       });
 
-      localStorage.setItem("last-search", new Date())
+      localStorage.setItem("last-search", new Date());
+      $("#btn-search").css("display", "none");
+      $("#time").css("display", "block");
+      let dur = 30,
+        display = document.querySelector('#time');
+      startTimer(dur, display);
+
 
       setTimeout(() => {
         $("#loading").css("display", "none");
@@ -332,14 +347,7 @@ const getData = async (page, type = "search") => {
     }
   }
   else {
-    let fiveMinutes = 30 - Math.ceil((new Date() - new Date(timeLastSearch)) / 1000),
-    display = document.querySelector('#time');
-    startTimer(fiveMinutes, display);
 
-    $("#modal-countdown").modal("show");
-    $('#modal-countdown').on('hidden.bs.modal', function (e) {
-      clearInterval(countdownInterval)
-    })
   }
 };
 
@@ -420,7 +428,8 @@ const getData = async (page, type = "search") => {
 
 
 function startTimer(duration, display) {
-  let timer = duration, minutes, seconds;
+  let timer = duration - 1, minutes, seconds;
+  display.textContent = "00:" + duration;
   countdownInterval = setInterval(function () {
     minutes = parseInt(timer / 60, 10);
     seconds = parseInt(timer % 60, 10);
@@ -431,8 +440,9 @@ function startTimer(duration, display) {
     display.textContent = minutes + ":" + seconds;
 
     if (--timer < 0) {
-      $("#modal-countdown").modal("hide");
-      clearInterval(countdownInterval)
+      clearInterval(countdownInterval);
+      $("#btn-search").css("display", "block");
+    $("#time").css("display", "none");
     }
 
   }, 1000);
