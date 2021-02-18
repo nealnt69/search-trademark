@@ -26,6 +26,8 @@ let count = 0;
 
 let listTradeMark = [];
 
+let countdownInterval;
+
 $(document).ready(function () {
   if (filterLocalStorage) {
     listFilter.html(
@@ -205,122 +207,139 @@ ${item.registerDate || "Chưa đăng ký"}
 }
 
 const getData = async (page, type = "search") => {
-  $("#filter-status").val("all")
-  try {
-    const filterLocalStorage = localStorage.getItem("filter-search");
-    const key = JSON.parse(window.localStorage.getItem("key"))
-    const keyDate = JSON.parse(window.localStorage.getItem("date"))
-    $("#loading").css("display", "flex");
-    const res = await axios({
-      method: "post",
-      url: `/api/search`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        text: textSearching,
-        page,
-        filter: filterLocalStorage ? JSON.parse(filterLocalStorage) : [],
-        key,
-        keyDate
-      },
-      timeout: 60000,
-    });
 
-    setTimeout(() => {
-      $("#loading").css("display", "none");
-    }, 500);
+  let timeLastSearch = localStorage.getItem('last-search');
+  if (!timeLastSearch || new Date() - new Date(timeLastSearch) > 30000) {
+    localStorage.removeItem("last-search")
+    $("#filter-status").val("all")
+    try {
+      const filterLocalStorage = localStorage.getItem("filter-search");
+      const key = JSON.parse(window.localStorage.getItem("key"))
+      const keyDate = JSON.parse(window.localStorage.getItem("date"))
+      $("#loading").css("display", "flex");
+      const res = await axios({
+        method: "post",
+        url: `/api/search`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          text: textSearching,
+          page,
+          filter: filterLocalStorage ? JSON.parse(filterLocalStorage) : [],
+          key,
+          keyDate
+        },
+        timeout: 60000,
+      });
 
-    if (res && res.data.status === "ok") {
-      const tradeMarks = res.data.tradeMarks;
+      localStorage.setItem("last-search", new Date())
 
-      // if (tradeMarks.length === 25) {
-      //   btnLoadMore.css("display", "block");
-      // } else {
-      //   btnLoadMore.css("display", "none");
-      // }
+      setTimeout(() => {
+        $("#loading").css("display", "none");
+      }, 500);
 
-      let contentTable = "";
+      if (res && res.data.status === "ok") {
+        const tradeMarks = res.data.tradeMarks;
 
-      if (type === "search") {
-        count = tradeMarks.length;
-        listTradeMark = tradeMarks;
+        // if (tradeMarks.length === 25) {
+        //   btnLoadMore.css("display", "block");
+        // } else {
+        //   btnLoadMore.css("display", "none");
+        // }
 
-        render(tradeMarks)
+        let contentTable = "";
 
-    //     contentTable = tradeMarks
-    //       .map(
-    //         (item) =>
-    //           ` <tr>
-    //     <td class="text-center text-muted">
-    //     <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
-    //           }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
-    //           }</a></td>
-    //     <td class="text-center">
-    //        ${item.trademark}
-    //     </td>
-    //     <td class="text-center">
-    //       <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
-    //           }">${item.status}</div>
-    //     </td>
-    //     <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
-    //           } trademark-type" style="position:relative;cursor:pointer" >${item.type}
-    //     <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
-    //           }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
-    //     </td>
-    //     <td class="text-center">
-    //        ${item.fieldOn}
-    //     </td>
-    //     <td class="text-center">
-    //     ${item.registerDate || "Chưa đăng ký"}
-    //  </td>
-    //   </tr>`
-    //       )
-    //       .join("");
-        textCount.html(count);
+        if (type === "search") {
+          count = tradeMarks.length;
+          listTradeMark = tradeMarks;
+
+          render(tradeMarks)
+
+          //     contentTable = tradeMarks
+          //       .map(
+          //         (item) =>
+          //           ` <tr>
+          //     <td class="text-center text-muted">
+          //     <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+          //           }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
+          //           }</a></td>
+          //     <td class="text-center">
+          //        ${item.trademark}
+          //     </td>
+          //     <td class="text-center">
+          //       <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+          //           }">${item.status}</div>
+          //     </td>
+          //     <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+          //           } trademark-type" style="position:relative;cursor:pointer" >${item.type}
+          //     <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+          //           }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+          //     </td>
+          //     <td class="text-center">
+          //        ${item.fieldOn}
+          //     </td>
+          //     <td class="text-center">
+          //     ${item.registerDate || "Chưa đăng ký"}
+          //  </td>
+          //   </tr>`
+          //       )
+          //       .join("");
+          textCount.html(count);
+        } else {
+          count += tradeMarks.length;
+          contentTable = `${tableBodyTradeMark.innerHTML} ${tradeMarks
+            .map(
+              (item) =>
+                ` <tr>
+            <td class="text-center text-muted">
+            <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
+                }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
+                }</a></td>
+            <td class="text-center">
+               ${item.trademark}
+            </td>
+            <td class="text-center">
+              <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
+                }">${item.status}</div>
+            </td>
+            <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
+                } trademark-type" style="position:relative;cursor:pointer" >${item.type
+                }
+            <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
+                }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
+            </td>
+            <td class="text-center">
+               ${item.fieldOn}
+            </td>
+            <td class="text-center">
+            ${item.registerDate || "Chưa đăng ký"}
+         </td>
+          </tr>`
+            )
+            .join("")}`;
+          textCount.html(count);
+        }
+
+        // tableBodyTradeMark.innerHTML = contentTable;
       } else {
-        count += tradeMarks.length;
-        contentTable = `${tableBodyTradeMark.innerHTML} ${tradeMarks
-          .map(
-            (item) =>
-              ` <tr>
-          <td class="text-center text-muted">
-          <a href='https://tsdr.uspto.gov/#caseNumber=${item.serial
-              }&caseType=SERIAL_NO&searchType=statusSearch' target='_blank' >${item.serial
-              }</a></td>
-          <td class="text-center">
-             ${item.trademark}
-          </td>
-          <td class="text-center">
-            <div class="btn btn-sm  ${item.status === "LIVE" ? "btn-success" : "btn-danger"
-              }">${item.status}</div>
-          </td>
-          <td class="text-center ${item.type === "Design" ? "text-info" : "text-secondary"
-              } trademark-type" style="position:relative;cursor:pointer" >${item.type
-              }
-          <div style="position:absolute;right:100%;top:50%;transform:translate(0%, -50%);z-index:9999;box-shadow:0 1rem 3rem rgba(0,0,0,.175)!important;border-radius:0.25rem;display:none" class='image'><img alt='${item.trademark
-              }' src='https://tsdr.uspto.gov/img/${item.serial}/large' /></div>
-          </td>
-          <td class="text-center">
-             ${item.fieldOn}
-          </td>
-          <td class="text-center">
-          ${item.registerDate || "Chưa đăng ký"}
-       </td>
-        </tr>`
-          )
-          .join("")}`;
-        textCount.html(count);
+        // tableBodyTradeMark.innerHTML = "";
       }
-
-      // tableBodyTradeMark.innerHTML = contentTable;
-    } else {
-      // tableBodyTradeMark.innerHTML = "";
+    } catch (error) {
+      tableBodyTradeMark.innerHTML = "";
+      $("#loading").css("display", "none");
+      console.log(error);
     }
-  } catch (error) {
-    tableBodyTradeMark.innerHTML = "";
-    $("#loading").css("display", "none");
-    console.log(error);
+  }
+  else {
+    let fiveMinutes = 30 - Math.ceil((new Date() - new Date(timeLastSearch)) / 1000),
+    display = document.querySelector('#time');
+    startTimer(fiveMinutes, display);
+
+    $("#modal-countdown").modal("show");
+    $('#modal-countdown').on('hidden.bs.modal', function (e) {
+      clearInterval(countdownInterval)
+    })
   }
 };
 
@@ -398,3 +417,24 @@ const getData = async (page, type = "search") => {
     }
   });
 })(jQuery);
+
+
+function startTimer(duration, display) {
+  let timer = duration, minutes, seconds;
+  countdownInterval = setInterval(function () {
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    display.textContent = minutes + ":" + seconds;
+
+    if (--timer < 0) {
+      $("#modal-countdown").modal("hide");
+      clearInterval(countdownInterval)
+    }
+
+  }, 1000);
+}
+
