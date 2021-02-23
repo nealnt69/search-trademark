@@ -158,7 +158,7 @@ const render = tradeMarks => {
   let keyword = JSON.parse(window.localStorage.getItem("list-trademark")) || [];
 
 
-  let contentTable = `${keyword
+  let contentTable = `${keyword.filter(i => textSearching.includes(i))
     .map(
       (item) =>
         ` <tr>
@@ -442,7 +442,7 @@ function startTimer(duration, display) {
     if (--timer < 0) {
       clearInterval(countdownInterval);
       $("#btn-search").css("display", "block");
-    $("#time").css("display", "none");
+      $("#time").css("display", "none");
     }
 
   }, 1000);
