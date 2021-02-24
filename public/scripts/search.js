@@ -158,7 +158,7 @@ const render = tradeMarks => {
   let keyword = JSON.parse(window.localStorage.getItem("list-trademark")) || [];
  
 
-  let contentTable = `${keyword.filter(i => textSearching.includes(i))
+  let contentTable = `${keyword.filter(i => textSearching.toLowerCase().includes(i.toLowerCase()))
     .map(
       (item) =>
         ` <tr>
