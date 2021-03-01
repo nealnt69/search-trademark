@@ -262,12 +262,15 @@ router.post("/", async function (req, res, next) {
       let listSeriPageNew = []
 
       for (const child of childSearchList) {
+
         try {
           let html = await getHtmlCrawl1(child);
           let count = getCount(html);
           let listLoadPage = []
           let whileLoopStop = 0;
           let indexSession = 1;
+          let listSeriFirst = getSeriFromPage(html, child) || [];
+          listSeriPageNew.push(...listSeriFirst)
           while (whileLoopStop === 0) {
             console.log(indexSession)
             if (count > 50) {
@@ -284,8 +287,7 @@ router.post("/", async function (req, res, next) {
                   indexSession++;
                 }
                 else {
-                  let listSeriFirst = getSeriFromPage(html, child) || [];
-                  listSeriPageNew.push(...listSeriFirst)
+
                   listSeriPageNew.push(...listSeriEachChild.flat().filter(item => item !== null));
                   whileLoopStop++
                 }
